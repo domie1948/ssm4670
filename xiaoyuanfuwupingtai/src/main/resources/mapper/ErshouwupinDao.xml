@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ErshouwupinDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.ershouwupin_name as ershouwupinName
+        ,a.ershouwupin_types as ershouwupinTypes
+        ,a.ershouwupin_photo as ershouwupinPhoto
+        ,a.yonghu_id as yonghuId
+        ,a.ershouwupin_money as ershouwupinMoney
+        ,a.ershouwupin_content as ershouwupinContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ErshouwupinView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.sex_types as sexTypes
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.yonghu_banji_zhuanye as yonghuBanjiZhuanye
+        ,yonghu.yonghu_photo as yonghuPhoto
+
+        FROM ershouwupin  a
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test=" params.ershouwupinName != '' and params.ershouwupinName != null and params.ershouwupinName != 'null' ">
+                and a.ershouwupin_name like CONCAT('%',#{params.ershouwupinName},'%')
+            </if>
+            <if test="params.ershouwupinTypes != null">
+                and a.ershouwupin_types = #{params.ershouwupinTypes}
+            </if>
+            <if test="params.yonghuId != null">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.ershouwupinMoneyStart != null ">
+                <![CDATA[  and a.ershouwupin_money >= #{params.ershouwupinMoneyStart}   ]]>
+            </if>
+            <if test="params.ershouwupinMoneyEnd != null ">
+                <![CDATA[  and a.ershouwupin_money <= #{params.ershouwupinMoneyEnd}   ]]>
+            </if>
+            <if test=" params.ershouwupinContent != '' and params.ershouwupinContent != null and params.ershouwupinContent != 'null' ">
+                and a.ershouwupin_content like CONCAT('%',#{params.ershouwupinContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and yonghu.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test=" params.yonghuBanjiZhuanye != '' and params.yonghuBanjiZhuanye != null and params.yonghuBanjiZhuanye != 'null' ">
+                and yonghu.yonghu_banji_zhuanye like CONCAT('%',#{params.yonghuBanjiZhuanye},'%')
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
